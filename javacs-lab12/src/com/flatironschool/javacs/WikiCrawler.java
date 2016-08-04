@@ -143,6 +143,7 @@ public class WikiCrawler {
 		Elements paragraphs = wf.fetchWikipedia(source);
 		wc.queueInternalLinks(paragraphs);
 
+		System.out.println("Just crawled " + source);
 		/*
 		// loop until we index a new page
 		String res;
