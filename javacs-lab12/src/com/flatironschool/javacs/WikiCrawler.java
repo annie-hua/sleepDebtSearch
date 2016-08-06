@@ -58,16 +58,14 @@ public class WikiCrawler {
 	public String crawl(boolean testing) throws IOException {
 		//Choose and remove a URL from the queue in FIFO order
 		String nextUrl = this.queue.remove();
-        if (testing) {
-			//Index the page - this process can be more efficient if it also finds internal links
+    if (testing) {
+			//Index the page - readWikipedia() can be more efficient if it also finds internal links
 			Elements paragraphs = WikiCrawler.wf.readWikipedia(nextUrl);
 			this.index.indexPage(nextUrl, paragraphs);
 
 			//Queue all internal links
 			this.queueInternalLinks(paragraphs);
 
-			//Return the url of the page that was indexed
-			return nextUrl;
 		} else {
 			//Check if the URL has already been indexed
 			if (this.index.isIndexed(nextUrl)) {
@@ -80,9 +78,10 @@ public class WikiCrawler {
 			//Index the page and queue the links
 			this.index.indexPage(nextUrl, paragraphs);
 			this.queueInternalLinks(paragraphs);
-
-			return nextUrl;
 		}
+
+		//Return the url of the page that was indexed
+		return nextUrl;
 	}
 
 	/**
@@ -143,20 +142,21 @@ public class WikiCrawler {
 		Elements paragraphs = wf.fetchWikipedia(source);
 		wc.queueInternalLinks(paragraphs);
 
-		System.out.println("Just crawled " + source);
-		/*
+
+
 		// loop until we index a new page
 		String res;
 		do {
 			res = wc.crawl(false);
 
             // REMOVE THIS BREAK STATEMENT WHEN crawl() IS WORKING
-            break;
+            //break;
 		} while (res == null);
 
 		Map<String, Integer> map = index.getCounts("the");
 		for (Entry<String, Integer> entry: map.entrySet()) {
 			System.out.println(entry);
-		}*/
+		}
+
 	}
 }
