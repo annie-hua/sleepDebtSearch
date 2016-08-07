@@ -76,15 +76,40 @@ public class TermCounter {
 	 */
 	public void processText(String text) {
 		// replace punctuation with spaces, convert to lower case, and split on whitespace
-		String[] array = text.replaceAll("\\pP", " ").toLowerCase().split("\\s+");
-		System.out.println("The array after punc/lowercase before split at whitespace: " + text.replaceAll("\\pP", " ").toLowerCase());
+		String[] array = text.replaceAll("\\pP", " ").toLowerCase().trim().split("\\s+");
+		System.out.println("textToProcess -->" + text + "<--");
+		System.out.println("The array before punc/lowercase split at whitespace: --->" + text.replaceAll("\\pP", " ").toLowerCase().trim() + "<---");
 
 		for (int i=0; i<array.length; i++) {
 			String term = array[i];
 			System.out.println(term + " at index " + i);
-			incrementTermCount(term);
+			//Only increment the term if it is not an empty string
+			if (!term.isEmpty()) {
+				indexTextAsNGrams(term, 3); // index as trigrams
+			}
 		}
 	}
+
+	/**
+	 * Indexes the lowercase, no-puctuation text as trigrams
+	 *
+	 * @param text  The text to index into the term counter.
+	 */
+	public void indexTextAsNGrams(String text, int n) {
+		if (text.length() <= n) {
+			//If the text is less than or equal to a trigram
+			incrementTermCount(text);
+			System.out.println("term --->" + text + "<--- incremented becuase it was short");
+		} else {
+			//Iterate through the string in substrings of length n until the end of the string (may include spaces)
+			for(int i = 0; i <= text.length() - n; i++) {
+				String currentSubstring = text.substring(i, i + n);
+				incrementTermCount(currentSubstring);
+				System.out.println("term --->" + currentSubstring + "<--- incremented");
+			}
+		}
+	}
+
 
 	/**
 	 * Increments the counter associated with `term`.
@@ -152,5 +177,7 @@ public class TermCounter {
 		counter.processElements(paragraphs);
 		counter.printCounts();
 
+		System.out.println("Test: \n");
+		counter.processText("The dog's bark was loudly-going gone?");
 	}
 }
