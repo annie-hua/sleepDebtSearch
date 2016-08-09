@@ -1,0 +1,36 @@
+body{
+  background: #E7E6EB;
+  background-image: url("Globe.jpg");
+}
+
+div{
+  padding:5px;
+  margin: 5px;
+}
+
+#user{
+  color: #FFFFFF;
+}
+
+#enter_search{
+  color: #FFFFFF;
+  border-radius: 25px;
+  background: transparent;
+  padding: 300px;
+  width: 25%;
+}
+
+input[type=text] {
+  width: 130px;
+  box-sizing: border-box;
+  border: 2px;
+  border-radius: 4px;
+  font-size: 16px;
+  padding: 12px 10px 12px 20px;
+  -webkit-transition: width 0.4s ease-in-out;
+  transition: width 0.4s ease-in-out;
+}
+
+input[type=text]:focus {
+  width: 100%;
+}
