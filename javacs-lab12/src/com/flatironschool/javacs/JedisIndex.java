@@ -302,9 +302,9 @@ public class JedisIndex {
 		Jedis jedis = JedisMaker.make();
 		JedisIndex index = new JedisIndex(jedis);
 
-		index.deleteTermCounters();
-		index.deleteURLSets();
-		index.deleteAllKeys();
+		//index.deleteTermCounters();
+		//index.deleteURLSets();
+		//index.deleteAllKeys();
 		//loadIndex(index);
 
 		/*
@@ -314,7 +314,7 @@ public class JedisIndex {
 		}
 		*/
 
-		//index.printIndex();
+		index.printIndex();
 
 	}
 

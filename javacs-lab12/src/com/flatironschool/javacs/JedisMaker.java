@@ -34,6 +34,7 @@ public class JedisMaker {
 		try {
 			br = new BufferedReader(new FileReader(fileURL.getFile()));
 		} catch (FileNotFoundException e1) {
+			System.out.println("Path: " + fileURL.getPath());
 			System.out.println("File not found: " + filename);
 			printInstructions();
 			return null;

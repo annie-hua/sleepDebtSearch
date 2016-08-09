@@ -153,7 +153,7 @@ public class WikiCrawler {
             //break;
 		} while (res == null);
 
-		Map<String, Integer> map = index.getCounts("the");
+		Map<String, Integer> map = index.getCounts("cod"); //27, 35
 		for (Entry<String, Integer> entry: map.entrySet()) {
 			System.out.println(entry);
 		}
