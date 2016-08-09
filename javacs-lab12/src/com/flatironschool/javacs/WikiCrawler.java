@@ -27,6 +27,7 @@ public class WikiCrawler {
 	// fetcher used to get pages from Wikipedia
 	final static WikiFetcher wf = new WikiFetcher();
 
+
 	/**
 	 * Constructor.
 	 *
@@ -58,7 +59,7 @@ public class WikiCrawler {
 	public String crawl(boolean testing) throws IOException {
 		//Choose and remove a URL from the queue in FIFO order
 		String nextUrl = this.queue.remove();
-    if (testing) {
+    	if (testing) {
 			//Index the page - readWikipedia() can be more efficient if it also finds internal links
 			Elements paragraphs = WikiCrawler.wf.readWikipedia(nextUrl);
 			this.index.indexPage(nextUrl, paragraphs);
@@ -152,11 +153,6 @@ public class WikiCrawler {
             // REMOVE THIS BREAK STATEMENT WHEN crawl() IS WORKING
             //break;
 		} while (res == null);
-
-		Map<String, Integer> map = index.getCounts("cod"); //27, 35
-		for (Entry<String, Integer> entry: map.entrySet()) {
-			System.out.println(entry);
-		}
 
 	}
 }

@@ -20,6 +20,7 @@ public class TermCounter {
 
 	private Map<String, Integer> map;
 	private String label;
+	private Boolean debug = false;
 
 	public TermCounter(String label) {
 		this.label = label;
@@ -77,12 +78,19 @@ public class TermCounter {
 	public void processText(String text) {
 		// replace punctuation with spaces, convert to lower case, and split on whitespace
 		String[] array = text.replaceAll("\\pP", " ").toLowerCase().trim().split("\\s+");
-		System.out.println("textToProcess -->" + text + "<--");
-		System.out.println("The array before punc/lowercase split at whitespace: --->" + text.replaceAll("\\pP", " ").toLowerCase().trim() + "<---");
+		if (debug) {
+			System.out.println("textToProcess -->" + text + "<--");
+			System.out.println("The array before punc/lowercase split at whitespace: --->" + text.replaceAll("\\pP", " ").toLowerCase().trim() + "<---");
+		}
+
 
 		for (int i=0; i<array.length; i++) {
 			String term = array[i];
-			System.out.println(term + " at index " + i);
+
+			if (debug) {
+				System.out.println(term + " at index " + i);
+			}
+
 			//Only increment the term if it is not an empty string
 			if (!term.isEmpty()) {
 				indexTextAsNGrams(term, 3); // index as trigrams
@@ -99,13 +107,15 @@ public class TermCounter {
 		if (text.length() <= n) {
 			//If the text is less than or equal to a trigram
 			incrementTermCount(text);
-			System.out.println("term --->" + text + "<--- incremented becuase it was short");
+			if (debug) { System.out.println("term --->" + text + "<--- incremented becuase it was short"); }
+
 		} else {
 			//Iterate through the string in substrings of length n until the end of the string (may include spaces)
 			for(int i = 0; i <= text.length() - n; i++) {
 				String currentSubstring = text.substring(i, i + n);
 				incrementTermCount(currentSubstring);
-				System.out.println("term --->" + currentSubstring + "<--- incremented");
+
+				if (debug) { System.out.println("term --->" + currentSubstring + "<--- incremented"); }
 			}
 		}
 	}
@@ -176,8 +186,5 @@ public class TermCounter {
 		TermCounter counter = new TermCounter(url.toString());
 		counter.processElements(paragraphs);
 		counter.printCounts();
-
-		System.out.println("Test: \n");
-		counter.processText("The dog's bark was loudly-going gone?");
 	}
 }

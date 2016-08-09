@@ -15,20 +15,59 @@ import java.util.Scanner;
 import redis.clients.jedis.Jedis;
 
 public class Search {
+
+    public static JedisIndex index;
+
     public static void main(String[] args) throws IOException {
         Scanner input = new Scanner(System.in);
         System.out.println("Search: ");
         String query = input.nextLine();
+        query = query.trim();
 
         //Set up Jedis
         Jedis jedis = JedisMaker.make();
-		JedisIndex index = new JedisIndex(jedis);
+		Search.index = new JedisIndex(jedis);
+
+        parseQueryToNGrams(query, 3);
+
 
         //Check the count for the query
-        Map<String, Integer> map = index.getCountsFaster(query);
+        /*
+        System.out.println("Getting counts...");
+        Map<String, Integer> map = index.getCountsFaster("jav");
         for (Entry<String, Integer> entry: map.entrySet()) {
         	System.out.println(entry);
         }
+        */
 
     }
+
+
+    public static ArrayList<Set<String>> parseQueryToNGrams(String query, int n) {
+        ArrayList<Set<String>> setsOfUrls = new ArrayList<Set<String>>();
+
+        if (query.length() <= n) {
+            //If the text is less than or equal to a trigram
+            Set<String> currentSet = Search.index.getURLs(query);
+            setsOfUrls.add(currentSet);
+
+        } else {
+            //Iterate through the string in substrings of length n until the end of the string (may include spaces)
+            for(int i = 0; i <= query.length() - n; i++) {
+                String currentSubstring = query.substring(i, i + n);
+                Set<String> currentSet = Search.index.getURLs(currentSubstring);
+                setsOfUrls.add(currentSet);
+            }
+        }
+
+        return setsOfUrls;
+    }
+
+    /* A function that gets the counts for a term that should be in the all the urls?
+     *
+     */
+    public static void getCountsForUrls(Set<String> urls, String term) {
+
+    }
+
 }

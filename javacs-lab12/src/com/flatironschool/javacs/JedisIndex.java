@@ -121,7 +121,6 @@ public class JedisIndex {
 		Map<String, Integer> map = new HashMap<String, Integer>();
 		int i = 0;
 		for (String url: urls) {
-			System.out.println(url);
 			Integer count = new Integer((String) res.get(i++));
 			map.put(url, count);
 		}
@@ -302,9 +301,9 @@ public class JedisIndex {
 		Jedis jedis = JedisMaker.make();
 		JedisIndex index = new JedisIndex(jedis);
 
-		//index.deleteTermCounters();
-		//index.deleteURLSets();
-		//index.deleteAllKeys();
+		index.deleteTermCounters();
+		index.deleteURLSets();
+		index.deleteAllKeys();
 		//loadIndex(index);
 
 		/*
@@ -314,7 +313,7 @@ public class JedisIndex {
 		}
 		*/
 
-		index.printIndex();
+		//index.printIndex();
 
 	}
 
