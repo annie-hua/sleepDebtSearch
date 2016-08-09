@@ -29,6 +29,18 @@ public class Search {
         for (Entry<String, Integer> entry: map.entrySet()) {
         	System.out.println(entry);
         }
-
+        
+        //Merge intersection of url sets
+    public Set<String> intersect(List<Set<String>> urlList){
+    	Set<String> intersection = new HashSet<String>();
+    	Set<String> s1 = urlList.get(0);
+    	intersection = s1;
+    	int numSet = urlList.size();
+    	
+    	for(int i =0; i<numSet; i++){
+    		intersection.retainAll(urlList.get(i));	
+    	}
+    	
+    	return intersection;
     }
 }
