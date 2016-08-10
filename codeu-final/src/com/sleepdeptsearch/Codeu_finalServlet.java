@@ -13,7 +13,6 @@ public class Codeu_finalServlet extends HttpServlet {
 				+ "<script src='https://code.jquery.com/ui/1.11.4/jquery-ui.js'></script>"
 				+ "<link href='http://fonts.googleapis.com/css?family=Rock+Salt' rel='stylesheet' type='text/css'>"
 				+ "<link rel='stylesheet' type='text/css' href='/resources/search_page.css'>"
-				+ "<script src ='resources/search_page.js'></script>"
 				+ "<script src='https://code.jquery.com/ui/1.11.4/jquery-ui.js'></script>"
 				+ "<title>Search-R-Us</title>"
 				+ "<body>"
