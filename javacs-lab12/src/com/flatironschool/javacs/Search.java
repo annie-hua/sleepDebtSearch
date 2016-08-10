@@ -10,6 +10,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.Map.Entry;
+import java.util.HashSet;
+
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
 
 import java.util.Scanner;
 import redis.clients.jedis.Jedis;
@@ -28,8 +33,24 @@ public class Search {
         Jedis jedis = JedisMaker.make();
 		Search.index = new JedisIndex(jedis);
 
-        parseQueryToNGrams(query, 3);
 
+        List<Set<String>> urlsContainingQuery = parseQueryToNGrams(query, 3); //query as trigrams
+        //System.out.println("ArrayList of sets: " + urlsContainingQuery);
+
+        Set<String> intersection = intersect(urlsContainingQuery);
+
+        //Remove false positives
+        Set<String> removals = new HashSet<String>();
+        for (String url : intersection) {
+            if (!verifyUrl(url, query)) {
+                removals.add(url);
+            }
+        }
+        intersection.removeAll(removals);
+
+        System.out.println(intersection);
+
+        //System.out.println(index.getCount("https://en.wikipedia.org/wiki/Computer_architecture", "eas"));
 
         //Check the count for the query
         /*
@@ -42,19 +63,6 @@ public class Search {
 
     }
 
-    //Merge intersection of url sets
-    public Set<String> intersect(List<Set<String>> urlList){
-        Set<String> intersection = new HashSet<String>();
-        Set<String> s1 = urlList.get(0);
-        intersection = s1;
-        int numSet = urlList.size();
-
-        for(int i =0; i<numSet; i++){
-            intersection.retainAll(urlList.get(i));
-        }
-
-        return intersection;
-    }
 
     public static ArrayList<Set<String>> parseQueryToNGrams(String query, int n) {
         ArrayList<Set<String>> setsOfUrls = new ArrayList<Set<String>>();
@@ -76,11 +84,62 @@ public class Search {
         return setsOfUrls;
     }
 
+    //Merge intersection of url sets
+    public static Set<String> intersect(List<Set<String>> urlList){
+        Set<String> intersection = new HashSet<String>();
+        Set<String> s1 = urlList.get(0);
+        intersection = s1;
+        int numSet = urlList.size();
+
+        for(int i =0; i<numSet; i++){
+            intersection.retainAll(urlList.get(i));
+        }
+
+        return intersection;
+    }
+
+    /* A function that verifies the query exists in the return set of urls
+     *
+     */
+    public static Boolean verifyUrl(String url, String term) throws IOException {
+        Elements paragraphs = WikiCrawler.wf.fetchWikipedia(url);
+        return verifyElements(paragraphs, term);
+    }
+
+    /**
+	 * Takes a collection of Elements and counts their words.
+	 *
+	 * @param paragraphs
+	 */
+	public static Boolean verifyElements(Elements paragraphs, String term) {
+
+		for (Node node: paragraphs) {
+            // NOTE: we could use select to find the TextNodes, but since
+    		// we already have a tree iterator, let's use it.
+    		for (Node innerNode: new WikiNodeIterable(node)) {
+    			if (innerNode instanceof TextNode) {
+                    String text = ((TextNode) innerNode).text();
+    				String[] array = text.replaceAll("\\pP", " ").toLowerCase().trim().split("\\s+");
+                    for (String nodeText: array) {
+                        if (nodeText.equals(term)) {
+                            return true;
+                        }
+                    }
+
+    			}
+    		}
+		}
+
+        return false;
+	}
+
     /* A function that gets the counts for a term that should be in the all the urls?
      *
      */
     public static void getCountsForUrls(Set<String> urls, String term) {
 
     }
+
+
 
 }
