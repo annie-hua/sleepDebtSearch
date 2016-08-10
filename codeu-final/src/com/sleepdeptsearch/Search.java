@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
+
 
 
 import java.util.ArrayList;
@@ -40,7 +44,7 @@ public class Search {
 //    }
 
     //Merge intersection of url sets
-    public Set<String> intersect(List<Set<String>> urlList){
+    public static Set<String> intersect(List<Set<String>> urlList){
         Set<String> intersection = new HashSet<String>();
         Set<String> s1 = urlList.get(0);
         intersection = s1;
@@ -53,7 +57,7 @@ public class Search {
         return intersection;
     }
 
-    public static ArrayList<Set<String>> parseQueryToNGrams(String query, int n) throws IOException {
+    public static Set<String> parseQueryToNGrams(String query, int n) throws IOException {
     	
     	JedisIndex index = new JedisIndex(JedisMaker.make());
     	
@@ -73,14 +77,54 @@ public class Search {
             }
         }
 
-        return setsOfUrls;
+        Set<String> intersection = intersect(setsOfUrls);
+
+        //Remove false positives
+        Set<String> removals = new HashSet<String>();
+        for (String url : intersection) {
+            if (!verifyUrl(url, query)) {
+                removals.add(url);
+            }
+        }
+        intersection.removeAll(removals);
+        
+        return intersection;
+
     }
 
-    /* A function that gets the counts for a term that should be in the all the urls?
-     *
-     */
-    public static void getCountsForUrls(Set<String> urls, String term) {
+    /* A function that verifies the query exists in the return set of urls
+    *
+    */
+   public static Boolean verifyUrl(String url, String term) throws IOException {
+       Elements paragraphs = WikiCrawler.wf.fetchWikipedia(url);
+       return verifyElements(paragraphs, term);
+   }
 
-    }
+   /**
+	 * Takes a collection of Elements and counts their words.
+	 *
+	 * @param paragraphs
+	 */
+	public static Boolean verifyElements(Elements paragraphs, String term) {
+
+		for (Node node: paragraphs) {
+           // NOTE: we could use select to find the TextNodes, but since
+   		// we already have a tree iterator, let's use it.
+   		for (Node innerNode: new WikiNodeIterable(node)) {
+   			if (innerNode instanceof TextNode) {
+                   String text = ((TextNode) innerNode).text();
+   				String[] array = text.replaceAll("\\pP", " ").toLowerCase().trim().split("\\s+");
+                   for (String nodeText: array) {
+                       if (nodeText.equals(term)) {
+                           return true;
+                       }
+                   }
+
+   			}
+   		}
+		}
+
+       return false;
+	}
 
 }
